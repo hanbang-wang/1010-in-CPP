@@ -5,7 +5,7 @@
 
 using namespace std;
 
-bool become[8][8];
+bool become[10][10];
 bool image[3][3];
 
 void show()
@@ -140,7 +140,7 @@ bool ifCanPut(bool image[3][3])
 				for (int b = 0; b < 3; ++b)
 				{
 					if (become[i + a][j + b] == 1 && image[a][b] == 1)
-					{  
+					{
 						fault = true;
 						break;
 					}
@@ -220,7 +220,7 @@ int main()
 	show();
 
 enter:
-	cout << "Please enter the coordinate (e.g. 0 0):";
+	cout << "Please enter the left corner coordinate (e.g. 0 0):";
 	int x, y;
 	cin >> x >> y;
 	for (int i = 0; i < 3; ++i)
