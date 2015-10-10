@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstring>
+#include <algorithm>
 #include <time.h>
 
 using namespace std;
@@ -226,7 +227,7 @@ enter:
 	{
 		for (int j = 0; j < 3; ++j)
 		{
-			if (x >= 8 || y >= 8 || (x >= 6 && image[i + x][j + y] == 1) || (y >= 6 && image[i + x][j + y] == 1))
+			if ((x + i > 7 && image[i][j] == 1) || (y + j > 7 && image[i][j] == 1))
 			{
 				cout << "You have entered a wrong coordinate!" << endl;
 				goto enter;
