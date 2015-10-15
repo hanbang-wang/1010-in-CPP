@@ -7,72 +7,134 @@ using namespace std;
 
 bool become[10][10];
 bool image[3][3];
+bool gameOver = false;
+
+bool ifCanPut(bool image[3][3])
+{
+	for (int i = 0; i < 6; ++i)
+	{
+		for (int j = 0; j < 6; ++j)
+		{
+			if (become[i][j] == 1)
+			{
+				continue;
+			}
+			bool fault = false;
+			for (int a = 0; a < 3; ++a)
+			{
+				for (int b = 0; b < 3; ++b)
+				{
+					if (become[i + a][j + b] == 1 && image[a][b] == 1)
+					{
+						fault = true;
+						break;
+					}
+				}
+				if (fault)
+				{
+					break;
+				}
+			}
+			if (fault)
+			{
+				continue;
+			}
+			return true;
+		}
+	}
+	return false;
+}
 
 void show()
 {
-	memset(image, false, sizeof(image));
+	bool canPutFinal = false;
+	bool imagetemp[3][3][3];
 	srand((unsigned)time(NULL));
-	for (int i = 0; i < 3; ++i)
+	for (int cnt = 0; cnt < 3; ++cnt)
 	{
-		for (int j = 0; j < 3; ++j)
+		for (int i = 0; i < 3; ++i)
 		{
-			int sec = rand() % 2;
-			image[i][j] = sec;
-		}
-	}
-	bool image_decide[3][3];
-	memset(image_decide, 0, sizeof(image_decide));
-	int x = 0,y = 0;
-	for (int i = 0; i < 3; ++i)
-	{
-		for (int j = 0; j < 3; ++j)
-		{
-			if (image[i][j] == 0)
+			for (int j = 0; j < 3; ++j)
 			{
-				continue;
-			}
-			else if (image[i][j] == 1)
-			{
-				image_decide[x][y++] = image[i][j];
+				int sec = rand() % 2;
+				imagetemp[cnt][i][j] = sec;
 			}
 		}
+		bool image_decide[3][3];
+		memset(image_decide, 0, sizeof(image_decide));
+		int x = 0,y = 0;
+		for (int i = 0; i < 3; ++i)
+		{
+			for (int j = 0; j < 3; ++j)
+			{
+				if (imagetemp[cnt][i][j] == 0)
+				{
+					continue;
+				}
+				else if (imagetemp[cnt][i][j] == 1)
+				{
+					image_decide[x][y++] = imagetemp[cnt][i][j];
+				}
+			}
+			y = 0;
+			x++;
+		}
+		memset(imagetemp[cnt], 0, sizeof(imagetemp[cnt]));
+		x = 0;
 		y = 0;
-		x++;
-	}
-	memset(image, 0, sizeof(image));
-	x = 0;
-	y = 0;
-	for (int i = 0; i < 3; ++i)
-	{
-		for (int j = 0; j < 3; ++j)
+		for (int i = 0; i < 3; ++i)
 		{
-			if (image_decide[j][i] == 0)
+			for (int j = 0; j < 3; ++j)
 			{
-				continue;
+				if (image_decide[j][i] == 0)
+				{
+					continue;
+				}
+				else if (image_decide[j][i] == 1)
+				{
+					imagetemp[cnt][y++][x] = image_decide[j][i];
+				}
 			}
-			else if (image_decide[j][i] == 1)
-			{
-				image[y++][x] = image_decide[j][i];
-			}
+			y = 0;
+			x++;
 		}
-		y = 0;
-		x++;
+		if (ifCanPut(imagetemp[cnt]))
+		{
+			canPutFinal = true;
+		}
 	}
+	cout << "No.1:       No.2:       No.3:" << endl;
 	for (int i = 0; i < 3; ++i)
 	{
-		for (int j = 0; j < 3; ++j)
+		for (int pri = 0; pri < 3; ++pri)
 		{
-			if (image[i][j] == 1)
+			for (int j = 0; j < 3; ++j)
 			{
-				cout << "* ";
+				if (imagetemp[pri][i][j] == 1)
+				{
+					cout << "* ";
+				}
+				else if (imagetemp[pri][i][j] == 0)
+				{
+					cout << "  ";
+				}
 			}
-			else if (image[i][j] == 0)
-			{
-				cout << "  ";
-			}
+			cout << "      ";
 		}
 		cout << endl; 
 	}
+	cout << endl;
+	if (!canPutFinal)
+	{
+		gameOver = true;
+		return ;
+	}
+	int select;
+	cout << "Please enter your select image: ";
+	cin >> select;
+	memset(image, false, sizeof(image));
+	memcpy(image, imagetemp[select - 1], sizeof(imagetemp[select - 1]));
+	return ;
 }
 
 void checkDisap()
@@ -122,42 +184,6 @@ void checkDisap()
 			}
 		}
 	}
-}
-
-bool ifCanPut(bool image[3][3])
-{
-	for (int i = 0; i < 6; ++i)
-	{
-		for (int j = 0; j < 6; ++j)
-		{
-			if (become[i][j] == 1)
-			{
-				continue;
-			}
-			bool fault = false;
-			for (int a = 0; a < 3; ++a)
-			{
-				for (int b = 0; b < 3; ++b)
-				{
-					if (become[i + a][j + b] == 1 && image[a][b] == 1)
-					{
-						fault = true;
-						break;
-					}
-				}
-				if (fault)
-				{
-					break;
-				}
-			}
-			if (fault)
-			{
-				continue;
-			}
-			return true;
-		}
-	}
-	return false;
 }
 
 bool singleCanPut(int x, int y, bool image[3][3])
@@ -246,7 +272,7 @@ run:
 	checkDisap();
 	printSurface();
 	show();
-	if (!ifCanPut(image))
+	if (gameOver)
 	{
 		goto end;
 	}
